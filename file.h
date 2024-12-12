@@ -41,7 +41,13 @@ void printWavHeader(std::string inputFile);
 /// @param inputFile 
 /// @param outputFile 
 /// @param volumeScale 0.0f - 1.0f scale
-void reduceVolume(const std::string &inputFile, const std::string &outputFile, float volumeScale);
+void reduceTotalVolume(const std::string &inputFile, const std::string &outputFile, float volumeScale);
+
+/// @brief Writes the data vector into a WAV file using the given header
+/// @param outputFile 
+/// @param header 
+/// @param processedData 
+void writeOutputWav(const std::string &outputFile, WavHeader &header, std::vector<uint8_t> &processedData);
 
 
 

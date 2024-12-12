@@ -6,13 +6,13 @@
 #include "file.h"
 
 int main() {
-    std::string inputFile = "audio/royalty.wav";   // Input WAV file
+    std::string inputFile = "audio/output.wav";   // Input WAV file
     std::string outputFile = "audio/output.wav";// Output WAV file
-    float volumeScale = 0.5f;
+    
 
     printWavHeader(inputFile);
 
-    reduceVolume(inputFile, outputFile, volumeScale);
+    reduceTotalVolume(inputFile, outputFile, 0.5);
 
     return 0;
 }
