@@ -22,7 +22,7 @@ int main() {
 
     p1.printWavHeader();
 
-    //p1.reduceTotalVolume(0.5);
+    volumeGain_dB(p1, 3);
 
     p1.writeOutputWav(outputFile);
 
@@ -30,8 +30,7 @@ int main() {
     const std::vector<int16_t>& r = p1.getRightChannel();
     //const std::vector<char>& ld = p1.getListData();
     
-    std::cout << l.size() << " " << r.size() << '\n';
-
+    // std::cout << l.size() << " " << r.size() << '\n';
 
     std::string rawDump = "rawDump.txt";
     std::ofstream rawFile;
@@ -40,10 +39,6 @@ int main() {
         throw std::runtime_error("Unable to open file: " + rawDump);
     }
 
-    // for (char c : ld) {
-    //     rawFile << c << '\n';
-    // }
-    // rawFile << '\n';
 
     for (int i = 0; i < l.size(); i++) {
         rawFile << l[i] << " " << r[i] << '\n';

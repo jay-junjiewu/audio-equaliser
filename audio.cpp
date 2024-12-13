@@ -98,30 +98,6 @@ bool AudioProcessor::validWavFile() {
 }
 
 
-void AudioProcessor::reduceTotalVolume(float volumeScale) {
-    if (volumeScale < 0.0f || volumeScale > 1.0f) {
-        std::cerr << "Error: Volume scale must be between 0 and 1.\n";
-        return;
-    }
-
-    // Process left channel
-    for (auto& sample : leftChannel) {
-        int32_t scaledSample = static_cast<int32_t>(sample * volumeScale);
-        sample = std::max(std::min(scaledSample, 32767), -32768);
-    }
-
-    // Process right channel if stereo
-    if (header.numChannels == 2) {
-        for (auto& sample : rightChannel) {
-            int32_t scaledSample = static_cast<int32_t>(sample * volumeScale);
-            sample = std::max(std::min(scaledSample, 32767), -32768);
-        }
-    }
-
-    std::cout << "Total Volume reduced to " << volumeScale * 100 << "%\n";
-
-}
-
 void AudioProcessor::writeOutputWav(const std::string& outputFile) {
     if (leftChannel.empty() || (header.numChannels == 2 && rightChannel.empty())) {
         throw std::runtime_error("No audio data to write");

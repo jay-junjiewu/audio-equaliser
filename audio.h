@@ -1,5 +1,5 @@
-#ifndef FILE_H
-#define FILE_H
+#ifndef AUDIO_H
+#define AUDIO_H
 
 #include <iostream>
 #include <string>
@@ -8,6 +8,8 @@
 #include <vector>
 #include <fstream>
 #include <stdexcept>
+#include <cmath>
+#include <climits>
 
 
 class AudioProcessor {
@@ -42,7 +44,6 @@ public:
     const std::vector<char>& getListData() const { return listData; }
     const WavHeader& getHeader() const { return header; }
 
-
     /// @brief Check if a .wav file is valid
     /// @return bool
     bool validWavFile();
@@ -50,15 +51,14 @@ public:
     /// @brief Print WavHeader information
     void printWavHeader();
 
-    /// @brief Reduces total volumne of the whole file
-    /// @param volumeScale 0.0f - 1.0f scale
-    void reduceTotalVolume(float volumeScale);
-
-    /// @brief Writes the data vector into a WAV file using the given header
+    /// @brief Writes the left and right channel vector into a WAV file
     /// @param outputFile 
-    /// @param header 
-    /// @param processedData 
     void writeOutputWav(const std::string& outputFile);
+
+
+    /// @brief Reduces total volumne of the whole file
+    /// @param volume_dB +-48.0f scale dB
+    friend void volumeGain_dB(AudioProcessor p, float volume_dB);
 
 
 

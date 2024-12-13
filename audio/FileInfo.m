@@ -20,4 +20,7 @@ filename5 = 'super_shy_44.1k_16bit_stereo.wav';
 filename6 = 'super_shy_16k_16bit_stereo.wav';        
 [x6,Fs6] = audioread(filename6, "native");
 
-info = audioinfo(filename6);
+filename7 = 'output.wav';        
+[x7,Fs7] = audioread(filename7, "native");
+
+info = audioinfo(filename7);
