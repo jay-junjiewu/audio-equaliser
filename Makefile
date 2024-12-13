@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wvla -Werror -g
 CXX = clang++
 CXXFLAGS = -Wall -Wvla -Werror -g 
 
-SRC = main.cpp audio.cpp
+SRC = main.cpp audio.cpp dsp.cpp
 OBJ = $(SRC:.cpp=.o)
 
 ########################################################################

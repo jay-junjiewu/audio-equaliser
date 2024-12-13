@@ -84,7 +84,7 @@ bool AudioProcessor::validWavFile() {
         return false;
     }
 
-    if ( header.bitsPerSample != 16) {
+    if (header.bitsPerSample != 16) {
         std::cerr << "Error: Only 16-bit PCM files are supported.\n";
         return false;
     }
@@ -157,5 +157,31 @@ void AudioProcessor::writeOutputWav(const std::string& outputFile) {
 
     outFile.close();
 
-    std::cout << "Audio processed and saved to " << outputFile << "\n";
+    std::cout << "Audio saved to " << outputFile << "\n";
+}
+
+
+void AudioProcessor::writeOutputTxt(const std::string& outputFile) {
+    std::ofstream outFile;
+    outFile.open(outputFile);
+    if (!outFile) {
+        throw std::runtime_error("Unable to open file: " + outputFile);
+    }
+
+    if (header.numChannels == 2) {
+        // Stereo
+        for (int i = 0; i < leftChannel.size(); i++) {
+            outFile << leftChannel[i] << " " << rightChannel[i] << '\n';
+        }
+    } else if (header.numChannels == 1) {
+        // Mono
+        for (int i = 0; i < leftChannel.size(); i++) {
+            outFile << leftChannel[i] << '\n';
+        }
+
+    }
+
+    outFile.close();
+
+    std::cout << "Left " << leftChannel.size() << " and " << "Right " << rightChannel.size() << " samples saved to " << outputFile << "\n";
 }

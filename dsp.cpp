@@ -1,12 +1,20 @@
 #include "dsp.h"
 
-void volumeGain_dB(AudioProcessor p, float volume_dB) {
-    if (volume_dB < -48.0f || volume_dB > 48.0f) {
-        std::cerr << "Error: Volume scale must be between -48dB and 48dB\n";
+void volumeGain_dB(AudioProcessor& p, float gain_dB) {
+    if (gain_dB < -48.0f || gain_dB > 48.0f) {
+        std::cerr << "Error: Gain must be between -48dB and 48dB\n";
         return;
     }
 
-    float gain = pow(10, volume_dB / 20.0);
+    float gain = pow(10, gain_dB / 20.0);
+    volumeGain(p, gain);
+}
+
+void volumeGain(AudioProcessor& p, float gain) {
+    if (gain < -48.0f || gain > 48.0f) {
+        std::cerr << "Error: Gain must be between 0 and 255\n";
+        return;
+    }
 
     // Process left channel
     for (auto& sample : p.leftChannel) {
@@ -23,5 +31,4 @@ void volumeGain_dB(AudioProcessor p, float volume_dB) {
     }
 
     std::cout << "Total Gain of " << gain << " applied\n";
-
 }

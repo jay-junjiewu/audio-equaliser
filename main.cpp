@@ -22,32 +22,11 @@ int main() {
 
     p1.printWavHeader();
 
-    volumeGain_dB(p1, 3);
+    volumeGain_dB(p1, 5);
 
     p1.writeOutputWav(outputFile);
 
-    const std::vector<int16_t>& l = p1.getLeftChannel();
-    const std::vector<int16_t>& r = p1.getRightChannel();
-    //const std::vector<char>& ld = p1.getListData();
-    
-    // std::cout << l.size() << " " << r.size() << '\n';
-
-    std::string rawDump = "rawDump.txt";
-    std::ofstream rawFile;
-    rawFile.open(rawDump);
-    if (!rawFile) {
-        throw std::runtime_error("Unable to open file: " + rawDump);
-    }
-
-
-    for (int i = 0; i < l.size(); i++) {
-        rawFile << l[i] << " " << r[i] << '\n';
-        //rawFile << l[i] << '\n';
-    }
-
-    rawFile.close();
-
-    
+    p1.writeOutputTxt("audio/rawDump1.txt");
 
     return 0;
 }
