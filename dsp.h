@@ -5,21 +5,30 @@
 #include "audio.h"
 
 
-
 /// @brief Reduces total volumne of the whole file
 /// @param gain_dB -48.0f - 48.9f scale dB
 void volumeGain_dB(AudioProcessor& p, float gain_dB);
+
 
 /// @brief Reduces total volumne of the whole file
 /// @param p Reference to AudioProcessor object
 /// @param gain 0 - 255 scale
 void volumeGain(AudioProcessor& p, float gain);
 
-/// @brief Filters the audio based in filter coefficients
+
+/// @brief Filters all channels of AudioProcessor object
 /// @param p Reference to AudioProcessor object
-/// @param b Numerator Coefficents
-/// @param a Denominator Coefficents
-void filter(AudioProcessor& p, std::vector<int> b, std::vector<int> a);
+/// @param b Numerator Coefficents {b0, b1, b2, ...}
+/// @param a Denominator Coefficents {1, a1, a2, a3, ...}
+void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+
+
+/// @brief Filters data based on the filter coefficients
+/// @param channel data to filter
+/// @param b Numerator Coefficents {b0, b1, b2, ...}
+/// @param a Denominator Coefficents {1, a1, a2, a3, ...}
+/// @return vector of filtered data 
+std::vector<int16_t> applyFilterForChannel(const std::vector<int16_t>& channel, const std::vector<float>& b, const std::vector<float>& a);
 
 
 #endif

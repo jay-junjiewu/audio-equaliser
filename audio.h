@@ -43,6 +43,9 @@ public:
     const std::vector<int16_t>& getRightChannel() const { return rightChannel; }
     const std::vector<char>& getListData() const { return listData; }
     const WavHeader& getHeader() const { return header; }
+    const std::vector<std::vector<float>>& getB() const { return b; }
+    const std::vector<std::vector<float>>& getA() const { return a; }
+    const std::vector<int>& getCutoffFreq() const { return cutoffFreq; }
 
     /// @brief Check if a .wav file is valid
     /// @return bool
@@ -61,13 +64,14 @@ public:
 
 
 
-    /*************************** Friend DSP Functions *****************************/ 
+    /*************************** Friendly DSP Functions *****************************/ 
 
     friend void volumeGain_dB(AudioProcessor& p, float gain_dB);
 
     friend void volumeGain(AudioProcessor& p, float gain);
 
-    friend void filter(AudioProcessor& p, std::vector<int> b, std::vector<int> a);
+    friend void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+
 
 
 
@@ -76,6 +80,13 @@ private:
     std::vector<int16_t> leftChannel;   // Left channel audio samples
     std::vector<int16_t> rightChannel;  // Right channel audio samples
     std::vector<char> listData;         // LIST data
+
+    // Equaliser Filter Coefficients
+    std::vector<std::vector<float>> b;
+    std::vector<std::vector<float>> a;
+   
+    std::vector<int> cutoffFreq;        // Filter Cutoff Frequencies
+
 
 };
 

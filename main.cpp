@@ -3,8 +3,6 @@
 #include <vector>
 #include <cstdint>
 
-
-
 #include "audio.h"
 
 int main() {
@@ -21,12 +19,16 @@ int main() {
     AudioProcessor p1(inputFile);
 
     p1.printWavHeader();
+    p1.writeOutputTxt("audio/rawBefore.txt");
 
+
+    int band = 0;   // 0 - 4
+    filter(p1, p1.getB()[band], p1.getA()[band]);
     volumeGain_dB(p1, 5);
 
-    p1.writeOutputWav(outputFile);
 
-    p1.writeOutputTxt("audio/rawDump.txt");
+    p1.writeOutputWav(outputFile);
+    p1.writeOutputTxt("audio/rawAfter.txt");
 
     return 0;
 }

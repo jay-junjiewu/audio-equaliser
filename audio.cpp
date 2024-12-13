@@ -51,6 +51,47 @@ AudioProcessor::AudioProcessor(const std::string& inputFile) {
             rightChannel.push_back(samples[i * header.numChannels + 1]);
         }
     }
+
+    // Assign Filter Coefficients and Cutoff Frequencies
+    if (header.sampleRate != 16000) {
+        b = {
+            {0.00900722249256636, 0, -0.00900722249256636},
+            {0.0292521818132321, 0, -0.0292521818132321},
+            {0.0910574425041257, 0, -0.0910574425041257},
+            {0.255715017762066, 0, -0.255715017762066},
+            {0.660869002275827, 0, -0.660869002275827}
+        };
+
+        a = {
+            {1, -1.98178294224688, 0.981985555014867},
+            {1, -1.93931505505140, 0.941495636373536},
+            {1, -1.79542929063073, 0.817885114991749},
+            {1, -1.28384526173346, 0.488569964475869},
+            {1, 0.677742897862791, -0.321738004551655}
+        };
+
+        cutoffFreq = {20, 66, 220, 728, 2414, 8000};
+
+    } else if (header.sampleRate != 44100) {
+        b = {
+            {0.00434019928950892, 0, -0.00434019928950892},
+            {0.0173899449324947, 0, -0.0173899449324947},
+            {0.0671299757126811, 0, -0.0671299757126811},
+            {0.230876996126046, 0, -0.230876996126046},
+            {0.710446269397215, 0, -0.710446269397215}
+        };
+
+        a = {
+            {1, -1.99128678200870, 0.991319601420982},
+            {1, -1.96468631257117, 0.965220110135011},
+            {1, -1.85738082135863, 0.865740048574638},
+            {1, -1.42288642160914, 0.538246007747909},
+            {1, 0.578905012445896, -0.420892538794431}
+        };
+
+        cutoffFreq = {20, 81, 330, 1338, 5432, 22050};
+
+    }
 }
 
 
@@ -84,13 +125,18 @@ bool AudioProcessor::validWavFile() {
         return false;
     }
 
+    if (header.numChannels != 1 && header.numChannels != 2) {
+        std::cerr << "Error: Unsupported number of channels (Only Stereo and Mono).\n";
+        return false;
+    }
+
     if (header.bitsPerSample != 16) {
         std::cerr << "Error: Only 16-bit PCM files are supported.\n";
         return false;
     }
 
-    if (header.numChannels != 1 && header.numChannels != 2) {
-        std::cerr << "Error: Unsupported number of channels (Only Stereo and Mono).\n";
+    if (header.sampleRate != 16000 && header.sampleRate != 44100) {
+        std::cerr << "Error: Only 16kHz and 44.1kHz sampling frequencies are supported.\n";
         return false;
     }
 
@@ -117,7 +163,7 @@ void AudioProcessor::writeOutputWav(const std::string& outputFile) {
 
     // Correctly interleave stereo channels
     if (header.numChannels == 2) {
-        for (size_t i = 0; i < numSamples; ++i) {
+        for (size_t i = 0; i < numSamples; i++) {
             interleavedData.push_back(leftChannel[i]);
             interleavedData.push_back(rightChannel[i]);
         }
