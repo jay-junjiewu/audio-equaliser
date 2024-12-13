@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <cstdint>
 #include <vector>
 #include <fstream>
@@ -26,22 +27,19 @@ public:
         uint32_t byteRate;     // Bytes per second
         uint16_t blockAlign;   // Bytes per sample (all channels)
         uint16_t bitsPerSample;// Bits per sample
-        char subchunk2ID[4];   // "data"
-        uint32_t subchunk2Size;// Number of bytes in data
+        char subchunk2ID[4];   // "LIST"
+        uint32_t subchunk2Size;// Number of bytes in LIST
     };
     #pragma pack(pop)
-
-
 
     // Constructors
     AudioProcessor() = default;
     AudioProcessor(const std::string& inputFile);
 
-    // Getters for channel data
+    // Getters for private data
     const std::vector<int16_t>& getLeftChannel() const { return leftChannel; }
     const std::vector<int16_t>& getRightChannel() const { return rightChannel; }
-
-    // Get header
+    const std::vector<char>& getListData() const { return listData; }
     const WavHeader& getHeader() const { return header; }
 
 
@@ -68,7 +66,7 @@ private:
     WavHeader header;                   // WAV header
     std::vector<int16_t> leftChannel;   // Left channel audio samples
     std::vector<int16_t> rightChannel;  // Right channel audio samples
-
+    std::vector<char> listData;         // LIST data
 
 };
 

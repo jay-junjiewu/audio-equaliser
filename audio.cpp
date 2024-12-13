@@ -14,27 +14,37 @@ AudioProcessor::AudioProcessor(const std::string& inputFile) {
         throw std::runtime_error("Invalid WAV file: " + inputFile);
     }    
 
+    // Read LIST chunk ID and size
+    if (strncmp(header.subchunk2ID, "LIST", 4) == 0 && header.subchunk2Size > 0) {
+        listData.resize(header.subchunk2Size);
+        if (!inFile.read(listData.data(), header.subchunk2Size)) {
+            throw std::runtime_error("Failed to read LIST chunk");
+        }
+    }
+
+    // Read data chunk ID and size
+    char chunkID[5] = {0};  // +1 for null terminator
+    u_int32_t dataSize;
+    if (!inFile.read(chunkID, 4) || 
+        !inFile.read(reinterpret_cast<char*>(&dataSize), 4) || 
+        strcmp(chunkID, "data") != 0) {
+        throw std::runtime_error("Failed to read data chunk");
+    }
+
+    // Read data    
+    std::vector<uint8_t> rawData(dataSize);
+    inFile.read(reinterpret_cast<char*>(rawData.data()), dataSize);
+    inFile.close();
+
+
+    // Separate channels
     leftChannel.clear();
     rightChannel.clear();
 
-    // Calculate actual data size
-    inFile.seekg(0, std::ios::end);
-    std::streampos fileSize = inFile.tellg();
-    std::streampos dataStart = sizeof(WavHeader);
-    size_t actualDataSize = fileSize - dataStart;
-
-    // Read data
-    inFile.seekg(dataStart, std::ios::beg);
-    std::vector<uint8_t> rawData(actualDataSize);
-    inFile.read(reinterpret_cast<char*>(rawData.data()), actualDataSize);
-    inFile.close();
-
-    
     auto *samples = reinterpret_cast<int16_t *>(rawData.data());
     size_t numSamples = rawData.size() / sizeof(int16_t);
     size_t numChannelSamples = numSamples / header.numChannels;
-
-    // Separate channels
+    
     for (size_t i = 0; i < numChannelSamples; i++) {
         leftChannel.push_back(samples[i * header.numChannels]);
         if (header.numChannels == 2) {
