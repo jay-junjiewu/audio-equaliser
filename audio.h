@@ -63,13 +63,12 @@ public:
 
     /*************************** Friend DSP Functions *****************************/ 
 
-    /// @brief Reduces total volumne of the whole file
-    /// @param gain_dB +-48.0f scale dB
     friend void volumeGain_dB(AudioProcessor& p, float gain_dB);
 
-    /// @brief Reduces total volumne of the whole file
-    /// @param gain 0 - 255 scale
     friend void volumeGain(AudioProcessor& p, float gain);
+
+    friend void filter(AudioProcessor& p, std::vector<int> b, std::vector<int> a);
+
 
 
 private:

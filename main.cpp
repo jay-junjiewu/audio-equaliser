@@ -26,7 +26,7 @@ int main() {
 
     p1.writeOutputWav(outputFile);
 
-    p1.writeOutputTxt("audio/rawDump1.txt");
+    p1.writeOutputTxt("audio/rawDump.txt");
 
     return 0;
 }

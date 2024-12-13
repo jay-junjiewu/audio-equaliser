@@ -32,3 +32,14 @@ void volumeGain(AudioProcessor& p, float gain) {
 
     std::cout << "Total Gain of " << gain << " applied\n";
 }
+
+void filter(AudioProcessor& p, std::vector<int> b, std::vector<int> a) {
+    if (b.size() == 0) {
+        std::cerr << "Error: Filter numerator coefficients must not be empty\n";
+        return;
+    }
+
+
+
+    
+}
