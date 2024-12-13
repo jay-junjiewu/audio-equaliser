@@ -72,6 +72,9 @@ public:
 
     friend void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
 
+    friend void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+
+
 
 
 

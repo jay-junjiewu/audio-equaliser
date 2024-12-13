@@ -1,6 +1,7 @@
 #ifndef DSP_H
 #define DSP_H
 
+#include <algorithm>
 
 #include "audio.h"
 
@@ -24,11 +25,26 @@ void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<fl
 
 
 /// @brief Filters data based on the filter coefficients
-/// @param channel data to filter
+/// @param input data to filter
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
 /// @return vector of filtered data 
-std::vector<int16_t> applyFilterForChannel(const std::vector<int16_t>& channel, const std::vector<float>& b, const std::vector<float>& a);
+std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a);
+
+
+/// @brief Zero-phase filtering of all channels of AudioProcessor object
+/// @param p Reference to AudioProcessor object
+/// @param b Numerator Coefficents {b0, b1, b2, ...}
+/// @param a Denominator Coefficents {1, a1, a2, a3, ...}
+void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+
+
+/// @brief Zero-phase filtering based on the filter coefficients
+/// @param input data to filter
+/// @param b Numerator Coefficents {b0, b1, b2, ...}
+/// @param a Denominator Coefficents {1, a1, a2, a3, ...}
+/// @return vector of filtered data 
+std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a);
 
 
 #endif

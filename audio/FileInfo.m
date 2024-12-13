@@ -28,8 +28,8 @@ info = audioinfo(filename7);
 
 % FFT
 N = 10*1024;
-f = Fs3*(0:(N/2))/N;
-freqRaw = fft(x3, N);
+f = Fs1*(0:(N/2))/N;
+freqRaw = fft(x1, N);
 freqRaw = abs(freqRaw/N);
 freqRaw = freqRaw(1:N/2+1);
 freqRaw(2:end-1) = 2*freqRaw(2:end-1);
@@ -41,7 +41,7 @@ freqFilt = freqFilt(1:N/2+1);
 freqFilt(2:end-1) = 2*freqFilt(2:end-1);
 
 hold on
-plot(f_filt, freqFilt)
 plot(f, freqRaw)
-title('FFT 8kHz')
+plot(f_filt, freqFilt)
+legend("Original", "Filtered")
 hold off

@@ -19,16 +19,16 @@ int main() {
     AudioProcessor p1(inputFile);
 
     p1.printWavHeader();
-    p1.writeOutputTxt("audio/rawBefore.txt");
+    //p1.writeOutputTxt("audio/rawBefore.txt");
 
-
-    int band = 0;   // 0 - 4
+    // Sub-Bass, Bass, Midrange, Upper Midrange, Treble
+    int band = 2;   // 0 - 4
     filter(p1, p1.getB()[band], p1.getA()[band]);
-    volumeGain_dB(p1, 5);
+    volumeGain(p1, 1);
 
 
     p1.writeOutputWav(outputFile);
-    p1.writeOutputTxt("audio/rawAfter.txt");
+    //p1.writeOutputTxt("audio/rawAfter.txt");
 
     return 0;
 }

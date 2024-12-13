@@ -55,23 +55,23 @@ void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<fl
         for (float &x : a_norm) x /= k;
     }
 
-    p.leftChannel = applyFilterForChannel(p.leftChannel, b_norm, a_norm);
+    p.leftChannel = applyFilter(p.leftChannel, b_norm, a_norm);
 
     if (p.header.numChannels == 2) {
-        p.rightChannel = applyFilterForChannel(p.rightChannel, b_norm, a_norm);
+        p.rightChannel = applyFilter(p.rightChannel, b_norm, a_norm);
     }
 }
 
-std::vector<int16_t> applyFilterForChannel(const std::vector<int16_t>& channel, const std::vector<float>& b, const std::vector<float>& a) {
-    std::vector<int16_t> filteredChannel(channel.size(), 0);
+std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a) {
+    std::vector<int16_t> filteredChannel(input.size(), 0);
     
-    for (size_t i = 0; i < channel.size(); i++) {
+    for (size_t i = 0; i < input.size(); i++) {
         int32_t sum = 0;  // int32_t to avoid overflow
         
         // b coefficients
         for (size_t j = 0; j < b.size(); j++) {
             if (i >= j) {
-                sum += b[j] * static_cast<int32_t>(channel[i - j]);  // b[k] * x[n-k]
+                sum += b[j] * static_cast<int32_t>(input[i - j]);  // b[k] * x[n-k]
             }
         }
         
@@ -89,3 +89,43 @@ std::vector<int16_t> applyFilterForChannel(const std::vector<int16_t>& channel, 
     return filteredChannel;
 }
 
+void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a) {
+    if (b.empty() || a.empty()) {
+        std::cerr << "Error: Filter coefficients must not be empty\n";
+        return;
+    }
+
+    if (a[0] == 0.0f) {
+        std::cerr << "Error: Filter denominator a0 should not be 0\n";
+        return;
+    }
+
+    std::vector<float> b_norm = b;
+    std::vector<float> a_norm = a;
+
+    // Normalize to make a[0] == 1
+    const float epsilon = 1e-6f;
+    if (std::abs(a[0] - 1.0f) > epsilon) {
+        float k = a[0];
+        for (float &x : b_norm) x /= k;
+        for (float &x : a_norm) x /= k;
+    }
+
+    p.leftChannel = applyFiltfilt(p.leftChannel, b_norm, a_norm);
+
+    if (p.header.numChannels == 2) {
+        p.rightChannel = applyFiltfilt(p.rightChannel, b_norm, a_norm);
+    }
+}
+
+std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a) {
+    std::vector<int16_t> forwardFiltered = applyFilter(input, b, a);
+
+    std::reverse(forwardFiltered.begin(), forwardFiltered.end());
+
+    std::vector<int16_t> reverseFiltered = applyFilter(forwardFiltered, b, a);
+
+    std::reverse(reverseFiltered.begin(), reverseFiltered.end());
+
+    return reverseFiltered;
+}
