@@ -1,6 +1,10 @@
 #include "audio.h"
 
 AudioProcessor::AudioProcessor(const std::string& inputFile) {
+    initialise(inputFile);
+}
+
+void AudioProcessor::initialise(const std::string& inputFile) {
     // Open input file in binary mode
     std::ifstream inFile(inputFile, std::ios::binary);
     if (!inFile) {
@@ -75,6 +79,8 @@ AudioProcessor::AudioProcessor(const std::string& inputFile) {
     };
 
     cutoffFreq = {55, 182, 606, 2007, 6654, 22050};
+
+    std::cout << "Sucessfully read from " << inputFile << "\n\n";
 }
 
 
@@ -93,7 +99,7 @@ void AudioProcessor::printWavHeader() {
     std::cout << "Subchunk2 ID: " << std::string(header.subchunk2ID, 4) << "\n";
     std::cout << "Subchunk2 Size: " << header.subchunk2Size << " bytes\n";
 
-    std::cout << '\n';
+    std::cout << "\n";
 }
 
 
@@ -181,7 +187,7 @@ void AudioProcessor::writeOutputWav(const std::string& outputFile) {
 
     outFile.close();
 
-    std::cout << "Audio saved to " << outputFile << "\n";
+    std::cout << "Sucessfully saved to " << outputFile << "\n\n";
 }
 
 
@@ -207,5 +213,5 @@ void AudioProcessor::writeOutputTxt(const std::string& outputFile) {
 
     outFile.close();
 
-    std::cout << "Left " << leftChannel.size() << " and " << "Right " << rightChannel.size() << " samples saved to " << outputFile << "\n";
+    std::cout << "Left " << leftChannel.size() << " and " << "Right " << rightChannel.size() << " samples saved to " << outputFile << "\n\n";
 }

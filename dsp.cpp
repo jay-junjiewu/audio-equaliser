@@ -23,6 +23,8 @@ void volumeGain(AudioProcessor& p, float gain) {
     if (p.header.numChannels == 2) {
         p.rightChannel = applyVolumeGain(p.rightChannel, gain);
     }
+
+    std::cout << "Successfully applied gain of " << gain << "\n\n";
 }
 
 std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain) {
@@ -92,7 +94,6 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
         for (size_t j = 0; j < b.size(); j++) {
             if (i >= j) {
                 // b[j] * x[n-j]
-                // sum += static_cast<int32_t>(b[j] * input[i - j]);  
                 sum += b[j] * static_cast<double>(input[i - j]);  
             }
         }
@@ -102,12 +103,9 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
         for (size_t k = 1; k < a.size(); k++) {  
             if (i >= k) {
                 // a[k] * y[n-k]
-                // sum -= static_cast<int32_t>(a[k] * filteredChannel[i - k]);
                 sum -= a[k] * static_cast<double>(filteredChannel[i - k]);    
             }
         }
-
-        // filteredChannel[i] = static_cast<int16_t>(std::min(std::max(sum, static_cast<int32_t>(INT16_MIN)), static_cast<int32_t>(INT16_MAX)));
 
         filteredChannel[i] = static_cast<int16_t>(std::min(std::max(sum, static_cast<double>(INT16_MIN)), static_cast<double>(INT16_MAX)));
     }
@@ -201,5 +199,10 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains) {
         }
         rightChannel = std::move(accumulatedR);
     }
-    
+
+    std::cout << "Equalised with gains: ";
+    for (float g : gains) {
+        std::cout << g << " ";
+    }
+    std::cout << "\n\n";
 }

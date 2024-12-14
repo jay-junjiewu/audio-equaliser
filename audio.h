@@ -37,6 +37,8 @@ public:
     // Constructors
     AudioProcessor() = default;
     AudioProcessor(const std::string& inputFile);
+    // Constructor Helper
+    void initialise(const std::string& inputFile);
 
     // Getters for private data
     const std::vector<int16_t>& getLeftChannel() const { return leftChannel; }
