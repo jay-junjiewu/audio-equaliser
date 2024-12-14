@@ -56,7 +56,6 @@ void AudioProcessor::initialise(const std::string& inputFile) {
         }
     }
 
-    // Assign FIR (linear phase) Filter Coefficients and Cutoff Frequencies
     // Sub-Bass, Bass, Midrange, Upper Midrange, Treble
 
     // 55, 182, 606, 2007, 6654, 22050 at 44.1kHz sampling
@@ -77,8 +76,6 @@ void AudioProcessor::initialise(const std::string& inputFile) {
         {1,-0.88674,0.31417}
 
     };
-
-    cutoffFreq = {55, 182, 606, 2007, 6654, 22050};
 
     std::cout << "Sucessfully read from " << inputFile << "\n\n";
 }

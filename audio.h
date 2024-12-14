@@ -47,7 +47,6 @@ public:
     const WavHeader& getHeader() const { return header; }
     const std::vector<std::vector<double>>& getB() const { return b; }
     const std::vector<std::vector<double>>& getA() const { return a; }
-    const std::vector<int>& getCutoffFreq() const { return cutoffFreq; }
 
     /// @brief Check if a .wav file is valid
     /// @return bool
@@ -90,9 +89,6 @@ private:
     // Equaliser Filter Coefficients
     std::vector<std::vector<double>> b;
     std::vector<std::vector<double>> a;
-   
-    std::vector<int> cutoffFreq;        // Filter Cutoff Frequencies
-
 
 };
 

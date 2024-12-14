@@ -92,7 +92,7 @@ wc5 = 2*fc5/Fs;
 [h_theta4,theta4] = freqz(b4,a4, 2^15);
 [h_theta5,theta5] = freqz(b5,a5, 2^15);
 
-Fsplot = 44100;
+Fsplot = 16000;
 figure;
 loglog(theta1/(2*pi)*Fsplot, abs(h_theta1))
 hold on
