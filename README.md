@@ -46,7 +46,7 @@ Note: I could have used any of the many good libraries out there, which are poss
 3. **Gain Adjustment**:
    - Scales each band by a specified gain factor (in dB).
 4. **Audio Output**:
-   - Combines the processed frequency bands and outputs a `.wav` file
+   - Combines the processed frequency bands and outputs a `.wav` file.
 
 
 ## Contributing
@@ -57,8 +57,8 @@ Feel free to reach out with questions or suggestions!
 
 ## Future Enhancement Ideas
 - Add support for real-time audio processing.
-- Optimise performance for large audio files, like processing chunks separately
-- Support `.wav` files for all bit depths
+- Optimise performance for large audio files, like processing chunks separately.
+- Support `.wav` files for all bit depths.
 - Support reading/writing different files like `.mp3`, `.aiff`, `.flac` etc.
-- Support multichannel audio processing
+- Support multichannel audio processing.
 
