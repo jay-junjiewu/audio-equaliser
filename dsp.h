@@ -17,11 +17,18 @@ void volumeGain_dB(AudioProcessor& p, float gain_dB);
 void volumeGain(AudioProcessor& p, float gain);
 
 
+/// @brief Scales input data based on gain
+/// @param input data to scale
+/// @param gain 0 - 255 scale
+/// @return vector of scaled data 
+std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain);
+
+
 /// @brief Filters all channels of AudioProcessor object
 /// @param p Reference to AudioProcessor object
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
-void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
 
 /// @brief Filters data based on the filter coefficients
@@ -29,14 +36,14 @@ void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<fl
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
 /// @return vector of filtered data 
-std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a);
+std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::vector<double>& b, const std::vector<double>& a);
 
 
 /// @brief Zero-phase filtering of all channels of AudioProcessor object
 /// @param p Reference to AudioProcessor object
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
-void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
 
 /// @brief Zero-phase filtering based on the filter coefficients
@@ -44,7 +51,14 @@ void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
 /// @return vector of filtered data 
-std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std::vector<float>& b, const std::vector<float>& a);
+std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std::vector<double>& b, const std::vector<double>& a);
+
+
+/// @brief Applies 5 gains to the preset 5 equaliser filters
+/// @param p Reference to AudioProcessor object
+/// @param gains 5 gains for Sub-Bass, Bass, Midrange, Upper Midrange, Treble
+void equaliser(AudioProcessor& p, const std::vector<float>& gains);
+
 
 
 #endif

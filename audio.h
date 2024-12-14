@@ -43,8 +43,8 @@ public:
     const std::vector<int16_t>& getRightChannel() const { return rightChannel; }
     const std::vector<char>& getListData() const { return listData; }
     const WavHeader& getHeader() const { return header; }
-    const std::vector<std::vector<float>>& getB() const { return b; }
-    const std::vector<std::vector<float>>& getA() const { return a; }
+    const std::vector<std::vector<double>>& getB() const { return b; }
+    const std::vector<std::vector<double>>& getA() const { return a; }
     const std::vector<int>& getCutoffFreq() const { return cutoffFreq; }
 
     /// @brief Check if a .wav file is valid
@@ -70,10 +70,11 @@ public:
 
     friend void volumeGain(AudioProcessor& p, float gain);
 
-    friend void filter(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+    friend void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
-    friend void filtfilt(AudioProcessor& p, const std::vector<float>& b, const std::vector<float>& a);
+    friend void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
+    friend void equaliser(AudioProcessor& p, const std::vector<float>& gains);
 
 
 
@@ -85,8 +86,8 @@ private:
     std::vector<char> listData;         // LIST data
 
     // Equaliser Filter Coefficients
-    std::vector<std::vector<float>> b;
-    std::vector<std::vector<float>> a;
+    std::vector<std::vector<double>> b;
+    std::vector<std::vector<double>> a;
    
     std::vector<int> cutoffFreq;        // Filter Cutoff Frequencies
 
