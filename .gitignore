@@ -2,6 +2,6 @@
 
 program
 
-rawBefore.txt
+audio/super_shy_16k_16bit_stereo.wav
 
-rawAfter.txt
+audio/super_shy_44.1k_16bit_stereo.wav

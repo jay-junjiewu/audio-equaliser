@@ -152,12 +152,12 @@ int main(int argc, char* argv[]) {
 
 void runReadFileCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
     if (argc == 1) {
-        //std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
+        std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_mono.wav";
 
-        std::string inputFile = "audio/super_shy_44.1k_16bit_stereo.wav";
+        //std::string inputFile = "audio/super_shy_44.1k_16bit_stereo.wav";
         //std::string inputFile = "audio/super_shy_16k_16bit_stereo.wav";
 
         std::cout << "Default file read" << '\n';
