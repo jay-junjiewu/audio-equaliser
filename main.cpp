@@ -152,8 +152,8 @@ int main(int argc, char* argv[]) {
 
 void runReadFileCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
     if (argc == 1) {
-        std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
-        //std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
+        //std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
+        std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_mono.wav";
 
@@ -228,11 +228,6 @@ void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
     char sel = 'b';
     if (argc == 3) sel = tolower(argv[2][0]);
 
-    if (sel == 'r' && p.getRightChannel().empty()) {
-        std::cout << "Audio is mono and does not have a right channel" << "\n\n";
-        return;
-    }
-
     float gain;
     try {
         gain = stof(argv[1]);
@@ -257,11 +252,6 @@ void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& a
 
     char sel = 'b';
     if (argc == 7) sel = tolower(argv[6][0]);
-
-    if (sel == 'r' && p.getRightChannel().empty()) {
-        std::cout << "Audio is mono and does not have a right channel" << "\n\n";
-        return;
-    }
 
     std::vector<float> gains;
     for (int i = 1; i < 6; i++) {

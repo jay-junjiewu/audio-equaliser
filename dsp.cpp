@@ -22,6 +22,15 @@ void volumeGain(AudioProcessor& p, float gain, char sel) {
         return;
     }
 
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cerr << "Audio is mono and does not have a right channel" << "\n\n";
+        return;
+    }
+    
+    if (sel == 'b' && p.getRightChannel().empty()) {
+        sel = 'l';
+    }
+
     // Process left channel
     if (sel == 'l' || sel == 'b') {
         p.leftChannel = applyVolumeGain(p.leftChannel, gain);
@@ -72,6 +81,15 @@ void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<d
     if (sel != 'l' && sel != 'r' && sel != 'b') {
         std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
         return;
+    }
+
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cerr << "Audio is mono and does not have a right channel" << "\n\n";
+        return;
+    }
+    
+    if (sel == 'b' && p.getRightChannel().empty()) {
+        sel = 'l';
     }
 
     std::vector<double> b_norm = b;
@@ -163,6 +181,15 @@ void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector
         return;
     }
 
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cerr << "Audio is mono and does not have a right channel" << "\n\n";
+        return;
+    }
+    
+    if (sel == 'b' && p.getRightChannel().empty()) {
+        sel = 'l';
+    }
+
     std::vector<double> b_norm = b;
     std::vector<double> a_norm = a;
 
@@ -222,6 +249,15 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
     if (sel != 'l' && sel != 'r' && sel != 'b') {
         std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
         return;
+    }
+
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cerr << "Audio is mono and does not have a right channel" << "\n\n";
+        return;
+    }
+
+    if (sel == 'b' && p.getRightChannel().empty()) {
+        sel = 'l';
     }
 
     if (sel == 'l' || sel == 'b') {
