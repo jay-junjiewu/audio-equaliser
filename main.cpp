@@ -269,7 +269,7 @@ void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& a
 
 void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
     if (argc > 4) {
-        std::cout << "Usage: dc [thres] [ratio] [gain]" << "\n\n";
+        std::cout << "Usage: drc [thres] [ratio] [gain]" << "\n\n";
         return;
     }
 
