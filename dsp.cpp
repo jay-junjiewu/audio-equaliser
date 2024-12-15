@@ -419,3 +419,12 @@ void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float mak
     std::cout << " from " << startDuration << " to " << endDuration << " sec ";
     std::cout << "[" << startIndex << " - " << endIndex << ")\n\n";
 }
+
+void reverseAudio(AudioProcessor& p) {
+    std::reverse(p.leftChannel.begin(), p.leftChannel.end());
+
+    if (p.getHeader().numChannels == 2) 
+        std::reverse(p.rightChannel.begin(), p.rightChannel.end());
+
+    std::cout << "Successfully reversed audio \n\n";
+}

@@ -80,5 +80,9 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
 /// @param endDuration in seconds
 void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain, float startDuration, float endDuration);
 
+/// @brief Reverses the entire audio
+/// @param p Reference to AudioProcessor object
+void reverseAudio(AudioProcessor& p);
+
 
 #endif

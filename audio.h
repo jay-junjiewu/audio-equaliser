@@ -84,6 +84,7 @@ public:
 
     friend void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain, float startDuration, float endDuration);
 
+    friend void reverseAudio(AudioProcessor& p);
 
 
 private:

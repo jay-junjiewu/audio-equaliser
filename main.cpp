@@ -25,6 +25,8 @@ void runTrimCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
 void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
 void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
 void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
+void runReverseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
+
 
 struct Command {
     std::string code;
@@ -46,6 +48,7 @@ static std::vector<Command> COMMANDS = {
     {"g", runGainCommand, "g0 [sel] [start] [end]", "adds gain to audio data, sel = 'l', 'r', or 'b', cutoff in seconds"},
     {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
     {"drc", runDynamicCompressionCommand, "[thres] [ratio] [gain] [start] [end]", "dynamic compression: [threshold], [ratio], [gain], cutoff in seconds"},
+    {"rev", runReverseCommand, "", "reverses audio"},
 
     {"?", nullptr, "", "show this message"},
     {"q", nullptr, "", "quit"}
@@ -383,4 +386,13 @@ void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::
     }
     
     dynamicCompression(p, threshold, ratio, makeUpGain, startDuration, endDuration);
+}
+
+
+void runReverseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
+    if (p.getLeftChannel().empty()) {
+        std::cout << "Read in audio file with command \"r\" first!" << "\n\n";
+        return;
+    }
+    reverseAudio(p);
 }
