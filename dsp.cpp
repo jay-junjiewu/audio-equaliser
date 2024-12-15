@@ -1,24 +1,24 @@
 #include "dsp.h"
 
-void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel) {
+void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel, float startDuration, float endDuration) {
     if (gain_dB < -48.0f || gain_dB > 48.0f) {
-        std::cerr << "Error: Gain must be between -48dB and 48dB\n";
+        std::cerr << "Error: Gain must be between -48dB and 48dB\n\n";
         return;
     }
 
     float gain = pow(10, gain_dB / 20.0);
-    volumeGain(p, gain, sel);
+    volumeGain(p, gain, sel, startDuration, endDuration);
 }
 
-void volumeGain(AudioProcessor& p, float gain, char sel) {
+void volumeGain(AudioProcessor& p, float gain, char sel, float startDuration, float endDuration) {
     if (gain < 0.0f || gain > 255.0f) {
-        std::cerr << "Error: Gain must be between 0 and 255\n";
+        std::cerr << "Error: Gain must be between 0 and 255\n\n";
         return;
     }
 
     sel = tolower(sel);
     if (sel != 'l' && sel != 'r' && sel != 'b') {
-        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n\n";
         return;
     }
 
@@ -31,34 +31,73 @@ void volumeGain(AudioProcessor& p, float gain, char sel) {
         sel = 'l';
     }
 
+    if (startDuration < 0.0f || startDuration > p.totalDuration) {
+        std::cerr << "Error: Start duration must be between 0 and " << p.totalDuration << " sec\n\n";
+        return;
+    }
+
+    if (endDuration < 0.0f || endDuration > p.totalDuration) {
+        std::cerr << "Error: End duration must be between 0 and " << p.totalDuration << " sec\n\n";
+        return;
+    }
+
+    if (startDuration > endDuration) {
+        std::cerr << "Error: Start duration must be before end duration\n\n";
+        return;
+    }  
+
+    int startIndex = startDuration * p.header.sampleRate;
+    int endIndex = endDuration * p.header.sampleRate;
+
     // Process left channel
     if (sel == 'l' || sel == 'b') {
-        p.leftChannel = applyVolumeGain(p.leftChannel, gain);
+        p.leftChannel = applyVolumeGain(p.leftChannel, gain, startIndex, endIndex);
     }
 
     // Process right channel
     if (sel == 'r' || sel == 'b') {
-        p.rightChannel = applyVolumeGain(p.rightChannel, gain);
+        p.rightChannel = applyVolumeGain(p.rightChannel, gain, startIndex, endIndex);
     }
 
     std::cout << "Successfully applied gain of " << gain << " to ";
     if (sel == 'l')
-        std::cout << "left channel\n\n";
+        std::cout << "left channel ";
     else if (sel == 'r')
-        std::cout << "right channel\n\n";
+        std::cout << "right channel ";
     else if (sel == 'b')
-        std::cout << "left and right channels\n\n";
+        std::cout << "left and right channels ";
+
+    std::cout << "from " << startDuration << " to " << endDuration << " sec ";
+    std::cout << "[" << startIndex << " - " << endIndex << ")\n\n";
 }
 
-std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain) {
+std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain, int startIndex, int endIndex) {
     if (gain < 0.0f || gain > 255.0f) {
-        std::cerr << "Error: Gain must be between 0 and 255\n";
+        std::cerr << "Error: Gain must be between 0 and 255\n\n";
         return {};
     }
 
-    std::vector<int16_t> gainChannel(input.size(), 0);
+    if (startIndex < 0 || startIndex > input.size()) {
+        std::cerr << "Error: Start index must be between 0 and " << input.size() << " sec\n\n";
+        return {};
+    }
 
-    for (size_t i = 0; i < input.size(); i++) {
+    if (endIndex < 0 || endIndex > input.size()) {
+        std::cerr << "Error: End index must be between 0 and " << input.size() << " sec\n\n";
+        return {};
+    }
+
+    if (startIndex > endIndex) {
+        std::cerr << "Error: Start index must be before end index\n\n";
+        return {};
+    }  
+
+    std::vector<int16_t> gainChannel = input;
+    //(input.size(), 0);
+
+    std::cout << startIndex <<" "<< endIndex << "\n";
+
+    for (size_t i = startIndex; i < endIndex; i++) {
         int32_t scaledSample = static_cast<int32_t>(input[i]) * gain;
         gainChannel[i] = std::max(std::min(scaledSample, INT16_MAX), INT16_MIN);
     }
@@ -68,18 +107,18 @@ std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float ga
 
 void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel) {
     if (b.empty() || a.empty()) {
-        std::cerr << "Error: Filter coefficients must not be empty\n";
+        std::cerr << "Error: Filter coefficients must not be empty\n\n";
         return;
     }
 
     if (a[0] == 0.0f) {
-        std::cerr << "Error: Filter denominator a0 should not be 0\n";
+        std::cerr << "Error: Filter denominator a0 should not be 0\n\n";
         return;
     }
 
     sel = tolower(sel);
     if (sel != 'l' && sel != 'r' && sel != 'b') {
-        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n\n";
         return;
     }
 
@@ -166,18 +205,18 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
 
 void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel) {
     if (b.empty() || a.empty()) {
-        std::cerr << "Error: Filter coefficients must not be empty\n";
+        std::cerr << "Error: Filter coefficients must not be empty\n\n";
         return;
     }
 
     if (a[0] == 0.0f) {
-        std::cerr << "Error: Filter denominator a0 should not be 0\n";
+        std::cerr << "Error: Filter denominator a0 should not be 0\n\n";
         return;
     }
 
     sel = tolower(sel);
     if (sel != 'l' && sel != 'r' && sel != 'b') {
-        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n\n";
         return;
     }
 
@@ -234,20 +273,20 @@ std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std:
 
 void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
     if (gains.size() != 5) {
-        std::cerr << "Error: Equaliser needs 5 gains\n";
+        std::cerr << "Error: Equaliser needs 5 gains\n\n";
         return;
     }
 
     for (float g : gains) {
         if (g < 0.0f || g > 255.0f) {
-            std::cerr << "Error: Gain must be between 0 and 255\n";
+            std::cerr << "Error: Gain must be between 0 and 255\n\n";
             return;
         }
     }
 
     sel = tolower(sel);
     if (sel != 'l' && sel != 'r' && sel != 'b') {
-        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n\n";
         return;
     }
 
@@ -311,17 +350,17 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
 
 void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain) {
     if (threshold < 0.0f || threshold > 1.0f) {
-        std::cerr << "Error: Threshold must be between 0.0 and 1.0\n";
+        std::cerr << "Error: Threshold must be between 0.0 and 1.0\n\n";
         return;
     }
 
     if (ratio <= 0) {
-        std::cerr << "Error: Ratio must be greater than 1\n";
+        std::cerr << "Error: Ratio must be greater than 1\n\n";
         return;
     }
 
     if (makeUpGain < 1.0f || makeUpGain > 3.0f) {
-        std::cerr << "Error: Make-up gain must be between 1.0 and 3.0\n";
+        std::cerr << "Error: Make-up gain must be between 1.0 and 3.0\n\n";
         return;
     }
 

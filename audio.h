@@ -60,21 +60,21 @@ public:
     /// @param outputFile 
     void writeOutputWav(const std::string& outputFile);
 
-    // @brief Writes the left and right channel vector into a txt file
+    /// @brief Writes the left and right channel vector into a txt file
     /// @param outputFile 
     void writeOutputTxt(const std::string& outputFile);
 
-    /// @brief 
-    /// @param startDuration 
-    /// @param endDuration 
+    /// @brief Trims audio from start duration to end duration
+    /// @param startDuration in seconds
+    /// @param endDuration in seconds
     void trimAudio(float startDuration, float endDuration);
 
 
     /*************************** Friendly DSP Functions *****************************/ 
 
-    friend void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel);
+    friend void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel, float startDuration, float endDuration);
 
-    friend void volumeGain(AudioProcessor& p, float gain, char sel);
+    friend void volumeGain(AudioProcessor& p, float gain, char sel, float startDuration, float endDuration);
 
     friend void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel);
 

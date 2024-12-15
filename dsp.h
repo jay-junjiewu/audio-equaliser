@@ -9,21 +9,27 @@
 /// @brief Reduces total volumne of the whole file
 /// @param gain_dB -48.0f - 48.9f scale dB
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel);
+/// @param startDuration in seconds
+/// @param endDuration in seconds
+void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel, float startDuration, float endDuration);
 
 
 /// @brief Reduces total volumne of the whole file
 /// @param p Reference to AudioProcessor object
 /// @param gain 0 - 255 scale
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void volumeGain(AudioProcessor& p, float gain, char sel);
+/// @param startDuration in seconds
+/// @param endDuration in seconds
+void volumeGain(AudioProcessor& p, float gain, char sel, float startDuration, float endDuration);
 
 
 /// @brief Scales input data based on gain
 /// @param input data to scale
 /// @param gain 0 - 255 scale
 /// @return vector of scaled data 
-std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain);
+/// @param startIndex inclusive
+/// @param endIndex not inclusive
+std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain, int startIndex, int endIndex);
 
 
 /// @brief Filters all channels of AudioProcessor object

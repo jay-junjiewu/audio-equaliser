@@ -8,21 +8,21 @@ void AudioProcessor::initialise(const std::string& inputFile) {
     // Open input file in binary mode
     std::ifstream inFile(inputFile, std::ios::binary);
     if (!inFile) {
-        throw std::runtime_error("Unable to open file: " + inputFile);
+        throw std::runtime_error("Unable to open file: " + inputFile + "\n");
     }
 
     // Read WAV header
     inFile.read(reinterpret_cast<char*>(&header), sizeof(WavHeader));
 
     if (!validWavFile()) {
-        throw std::runtime_error("Invalid WAV file: " + inputFile);
+        throw std::runtime_error("Invalid WAV file: " + inputFile + "\n");
     }    
 
     // Read LIST chunk ID and size
     if (strncmp(header.subchunk2ID, "LIST", 4) == 0 && header.subchunk2Size > 0) {
         listData.resize(header.subchunk2Size);
         if (!inFile.read(listData.data(), header.subchunk2Size)) {
-            throw std::runtime_error("Failed to read LIST chunk");
+            throw std::runtime_error("Failed to read LIST chunk\n");
         }
     }
 
@@ -32,7 +32,7 @@ void AudioProcessor::initialise(const std::string& inputFile) {
     if (!inFile.read(chunkID, 4) || 
         !inFile.read(reinterpret_cast<char*>(&dataSize), 4) || 
         strcmp(chunkID, "data") != 0) {
-        throw std::runtime_error("Failed to read data chunk");
+        throw std::runtime_error("Failed to read data chunk\n");
     }
 
     // Read data    
@@ -105,22 +105,22 @@ void AudioProcessor::printWavHeader() {
 
 bool AudioProcessor::validWavFile() {
     if (std::string(header.chunkID, 4) != "RIFF" || std::string(header.format, 4) != "WAVE") {
-        std::cerr << "Error: Not a valid WAV file.\n";
+        std::cerr << "Error: Not a valid WAV file.\n\n";
         return false;;
     }
 
     if (header.audioFormat != 1) {
-        std::cerr << "Error: Only PCM format is supported.\n";
+        std::cerr << "Error: Only PCM format is supported.\n\n";
         return false;
     }
 
     if (header.numChannels != 1 && header.numChannels != 2) {
-        std::cerr << "Error: Unsupported number of channels (Only Stereo and Mono).\n";
+        std::cerr << "Error: Unsupported number of channels (Only Stereo and Mono).\n\n";
         return false;
     }
 
     if (header.bitsPerSample != 16) {
-        std::cerr << "Error: Only 16-bit PCM files are supported.\n";
+        std::cerr << "Error: Only 16-bit PCM files are supported.\n\n";
         return false;
     }
 
@@ -217,19 +217,18 @@ void AudioProcessor::writeOutputTxt(const std::string& outputFile) {
 
 
 void AudioProcessor::trimAudio(float startDuration, float endDuration) {
-
     if (startDuration < 0.0f || startDuration > totalDuration) {
-        std::cerr << "Error: Start duration must be between 0 and " << totalDuration << " sec\n";
+        std::cerr << "Error: Start duration must be between 0 and " << totalDuration << " sec\n\n";
         return;
     }
 
     if (endDuration < 0.0f || endDuration > totalDuration) {
-        std::cerr << "Error: End duration must be between 0 and " << totalDuration << " sec\n";
+        std::cerr << "Error: End duration must be between 0 and " << totalDuration << " sec\n\n";
         return;
     }
 
     if (startDuration > endDuration) {
-        std::cerr << "Error: Start duration must be before end duration\n";
+        std::cerr << "Error: Start duration must be before end duration\n\n";
         return;
     }    
 
@@ -247,7 +246,8 @@ void AudioProcessor::trimAudio(float startDuration, float endDuration) {
 
     totalDuration = static_cast<float>(endIndex - startIndex) / header.sampleRate;
 
-    std::cout << "Trimmed audio from " << startDuration << " to " << endDuration << " sec\n";
-    std::cout << "New audio duration: " << totalDuration << " sec\n";
+    std::cout << "Trimmed audio from " << startDuration << " to " << endDuration << " sec ";
+    std::cout << "[" << startIndex << " - " << endIndex << ")\n";
+    std::cout << "New audio duration: " << totalDuration << " sec\n\n";
     
 }

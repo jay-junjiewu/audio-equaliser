@@ -41,9 +41,9 @@ static std::vector<Command> COMMANDS = {
     {"w", runWriteFileCommand, "[output.wav]", "writes result to .wav file"},
     {"h", runPrintHeaderCommand, "", "prints header information of the .wav file"},
     {"p", runPrintTxtCommand, "[output.txt]", "prints audio data to .txt file"},
-    {"t", runTrimCommand, "start [end]", "trims audio between start and [end]"},
+    {"t", runTrimCommand, "start [end]", "trims audio between start and [end] duration"},
     
-    {"g", runGainCommand, "g0 [sel]", "adds gain to audio data, sel = 'l', 'r', or 'b'"},
+    {"g", runGainCommand, "g0 [sel] [start] [end]", "adds gain to audio data, sel = 'l', 'r', or 'b', [start] and [end] duration"},
     {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
     {"drc", runDynamicCompressionCommand, "[thres] [ratio] [gain]", "dynamic range compression parameters: threshold, ratio, gain"},
 
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
             }
 
             if (!validCommand) {
-                std::cout << "Unknown command '" << cmdName << "'" << '\n';
+                std::cout << "Unknown command '" << cmdName << "'" << "\n\n";
             }
         }
     }
@@ -155,12 +155,12 @@ int main(int argc, char* argv[]) {
 
 void runReadFileCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
     if (argc == 1) {
-        std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
+        //std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_mono.wav";
 
-        //std::string inputFile = "audio/super_shy_44.1k_16bit_stereo.wav";
+        std::string inputFile = "audio/super_shy_44.1k_16bit_stereo.wav";
         //std::string inputFile = "audio/super_shy_16k_16bit_stereo.wav";
 
         std::cout << "Default file read" << '\n';
@@ -250,8 +250,8 @@ void runTrimCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
 }
 
 void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
-    if (argc != 2 && argc != 3) {
-        std::cout << "Usage: g g0 [sel]" << "\n\n";
+    if (argc < 2 || argc > 5) {
+        std::cout << "Usage: g g0 [sel] [start] [end]" << "\n\n";
         return;
     }
 
@@ -259,9 +259,6 @@ void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
         std::cout << "Read in audio file with command \"r\" first! " << "\n\n";
         return;
     }
-
-    char sel = 'b';
-    if (argc == 3) sel = tolower(argv[2][0]);
 
     float gain;
     try {
@@ -271,7 +268,30 @@ void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
         return;
     }
 
-    volumeGain(p, gain, sel);
+    char sel = 'b';
+    if (argc >= 3) sel = tolower(argv[2][0]);
+
+    float startDuration = 0.0f;
+    if (argc >= 4) {
+        try {
+            startDuration = stof(argv[3]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid value " << argv[3] << "\n\n";
+            return;
+        }
+    }
+
+    float endDuration = p.getDuration();
+    if (argc == 5) {
+        try {
+            endDuration = stof(argv[4]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid value " << argv[4] << "\n\n";
+            return;
+        }
+    }
+
+    volumeGain(p, gain, sel, startDuration, endDuration);
 }
 
 void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
