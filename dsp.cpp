@@ -308,3 +308,58 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
     }
     std::cout << "\n\n";
 }
+
+void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain) {
+    if (threshold < 0.0f || threshold > 1.0f) {
+        std::cerr << "Error: Threshold must be between 0.0 and 1.0\n";
+        return;
+    }
+
+    if (ratio <= 0) {
+        std::cerr << "Error: Ratio must be greater than 1\n";
+        return;
+    }
+
+    if (makeUpGain < 1.0f || makeUpGain > 3.0f) {
+        std::cerr << "Error: Make-up gain must be between 1.0 and 3.0\n";
+        return;
+    }
+
+    int thresholdInt = threshold * INT16_MAX;
+    
+    for (size_t j = 0; j < p.leftChannel.size(); j++) {
+        int32_t compressedL = static_cast<int32_t>(p.leftChannel[j]);
+        
+        if (abs(compressedL) > thresholdInt) {
+            if (compressedL > 0)
+                compressedL = thresholdInt + (compressedL - thresholdInt) / ratio;
+            else
+                compressedL = -thresholdInt + (compressedL + thresholdInt) / ratio;
+        }
+        compressedL *= makeUpGain;
+
+        compressedL = std::clamp(compressedL, static_cast<int32_t>(INT16_MIN), static_cast<int32_t>(INT16_MAX));
+        p.leftChannel[j] = static_cast<int16_t>(compressedL);
+    }
+
+    if (p.getHeader().numChannels == 2) {
+        for (size_t j = 0; j < p.rightChannel.size(); j++) {
+            int32_t compressedR = static_cast<int32_t>(p.rightChannel[j]);
+
+            if (abs(compressedR) > thresholdInt) {
+                if (compressedR > 0)
+                    compressedR = thresholdInt + (compressedR - thresholdInt) / ratio;
+                else
+                    compressedR = -thresholdInt + (compressedR + thresholdInt) / ratio;
+            }
+            compressedR *= makeUpGain;
+
+            compressedR = std::clamp(compressedR, static_cast<int32_t>(INT16_MIN), static_cast<int32_t>(INT16_MAX));
+            p.rightChannel[j] = static_cast<int16_t>(compressedR);
+        }
+    }
+  
+    std::cout << "Dynamically compressed audio with threshold " << threshold;
+    std::cout << ", ratio " << ratio << ":1,";
+    std::cout << " and make-up gain " << makeUpGain << "\n\n";
+}

@@ -9,14 +9,14 @@
 /// @brief Reduces total volumne of the whole file
 /// @param gain_dB -48.0f - 48.9f scale dB
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel = 'b');
+void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel);
 
 
 /// @brief Reduces total volumne of the whole file
 /// @param p Reference to AudioProcessor object
 /// @param gain 0 - 255 scale
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void volumeGain(AudioProcessor& p, float gain, char sel = 'b');
+void volumeGain(AudioProcessor& p, float gain, char sel);
 
 
 /// @brief Scales input data based on gain
@@ -31,7 +31,7 @@ std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float ga
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel = 'b');
+void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel);
 
 
 /// @brief Filters data based on the filter coefficients
@@ -47,7 +47,7 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel = 'b');
+void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel);
 
 
 /// @brief Zero-phase filtering based on the filter coefficients
@@ -62,7 +62,15 @@ std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std:
 /// @param p Reference to AudioProcessor object
 /// @param gains 5 gains for Sub-Bass, Bass, Midrange, Upper Midrange, Treble
 /// @param sel Channel selection: left 'L', right 'R' or both 'B'
-void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel = 'b');
+void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
+
+
+/// @brief Applies dynamic compression to all audio channels
+/// @param p Reference to AudioProcessor object
+/// @param threshold 0.0f - 1.0f, level above which to apply gain reduction
+/// @param ratio >= 1, degree of compression
+/// @param makeUpGain 1.0f - 3.0f, whole signal gain to bring output level back up
+void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain);
 
 
 #endif

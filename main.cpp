@@ -23,7 +23,7 @@ void runDumpTxtCommand(AudioProcessor& p, int argc, std::vector<std::string>& ar
 
 void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
 void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
-
+void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv);
 
 struct Command {
     std::string code;
@@ -43,6 +43,7 @@ static std::vector<Command> COMMANDS = {
     
     {"g", runGainCommand, "g0 [sel]", "adds gain to audio data, sel = 'l', 'r', or 'b'"},
     {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
+    {"dc", runDynamicCompressionCommand, "[thres] [ratio] [gain]", "dynamic compression parameters: threshold, ratio, gain"},
 
     {"?", nullptr, "", "show this message"},
     {"q", nullptr, "", "quit"}
@@ -152,8 +153,8 @@ int main(int argc, char* argv[]) {
 
 void runReadFileCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
     if (argc == 1) {
-        //std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
-        std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
+        std::string inputFile = "audio/royalty_44.1k_16bit_stereo.wav";
+        //std::string inputFile = "audio/royalty_44.1k_16bit_mono.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_stereo.wav";
         //std::string inputFile = "audio/royalty_16k_16bit_mono.wav";
 
@@ -264,4 +265,48 @@ void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& a
         }
     }
     equaliser(p, gains, sel);
+}
+
+void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
+    if (argc > 4) {
+        std::cout << "Usage: dc [thres] [ratio] [gain]" << "\n\n";
+        return;
+    }
+
+    if (p.getLeftChannel().empty()) {
+        std::cout << "Read in audio file with command \"r\" first!" << "\n\n";
+        return;
+    }
+
+    float threshold = 0.7f;
+    if (argc >= 2) {
+        try {
+            threshold = stof(argv[1]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid threshold value " << argv[1] << "\n\n";
+            return;
+        }
+    }
+
+    int ratio = 2;
+    if (argc >= 3) {
+        try {
+            ratio = stoi(argv[2]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid ratio value " << argv[2] << "\n\n";
+            return;
+        }
+    }
+    
+    float makeUpGain = 1.0f;
+    if (argc >= 4) {
+        try {
+            makeUpGain = stof(argv[3]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid make-up gain value " << argv[3] << "\n\n";
+            return;
+        }
+    }
+    
+    dynamicCompression(p, threshold, ratio, makeUpGain);
 }

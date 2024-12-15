@@ -77,6 +77,8 @@ public:
 
     friend void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
 
+    friend void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain);
+
 
 
 private:
