@@ -76,7 +76,9 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
 /// @param threshold 0.0f - 1.0f, level above which to apply gain reduction
 /// @param ratio >= 1, degree of compression
 /// @param makeUpGain 1.0f - 3.0f, whole signal gain to bring output level back up
-void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain);
+/// @param startDuration in seconds
+/// @param endDuration in seconds
+void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain, float startDuration, float endDuration);
 
 
 #endif

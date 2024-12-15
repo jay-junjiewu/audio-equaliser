@@ -41,11 +41,11 @@ static std::vector<Command> COMMANDS = {
     {"w", runWriteFileCommand, "[output.wav]", "writes result to .wav file"},
     {"h", runPrintHeaderCommand, "", "prints header information of the .wav file"},
     {"p", runPrintTxtCommand, "[output.txt]", "prints audio data to .txt file"},
-    {"t", runTrimCommand, "start [end]", "trims audio between start and [end] duration"},
+    {"t", runTrimCommand, "start [end]", "trims audio, cutoff in seconds"},
     
-    {"g", runGainCommand, "g0 [sel] [start] [end]", "adds gain to audio data, sel = 'l', 'r', or 'b', [start] and [end] duration"},
+    {"g", runGainCommand, "g0 [sel] [start] [end]", "adds gain to audio data, sel = 'l', 'r', or 'b', cutoff in seconds"},
     {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
-    {"drc", runDynamicCompressionCommand, "[thres] [ratio] [gain]", "dynamic range compression parameters: threshold, ratio, gain"},
+    {"drc", runDynamicCompressionCommand, "[thres] [ratio] [gain] [start] [end]", "dynamic compression: [threshold], [ratio], [gain], cutoff in seconds"},
 
     {"?", nullptr, "", "show this message"},
     {"q", nullptr, "", "quit"}
@@ -54,7 +54,7 @@ static std::vector<Command> COMMANDS = {
 void showHelp() {
     std::cout << "Commands:" << '\n';
     for (const auto& cmd : COMMANDS) {
-        std::cout << std::left << std::setw(5) << cmd.code << std::setw(25) << cmd.argHint << cmd.helpMsg << '\n';
+        std::cout << std::left << std::setw(5) << cmd.code << std::setw(40) << cmd.argHint << cmd.helpMsg << '\n';
     }
     std::cout << '\n';
 }
@@ -322,8 +322,8 @@ void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& a
 }
 
 void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
-    if (argc > 4) {
-        std::cout << "Usage: drc [thres] [ratio] [gain]" << "\n\n";
+    if (argc > 6) {
+        std::cout << "Usage: drc [thres] [ratio] [gain] [start] [end]" << "\n\n";
         return;
     }
 
@@ -361,6 +361,26 @@ void runDynamicCompressionCommand(AudioProcessor& p, int argc, std::vector<std::
             return;
         }
     }
+
+    float startDuration = 0.0f;
+    if (argc >= 5) {
+        try {
+            startDuration = stof(argv[4]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid value " << argv[4] << "\n\n";
+            return;
+        }
+    }
+
+    float endDuration = p.getDuration();
+    if (argc == 6) {
+        try {
+            endDuration = stof(argv[5]);
+        } catch (std::exception& e) {
+            std::cout << "Error: Invalid value " << argv[5] << "\n\n";
+            return;
+        }
+    }
     
-    dynamicCompression(p, threshold, ratio, makeUpGain);
+    dynamicCompression(p, threshold, ratio, makeUpGain, startDuration, endDuration);
 }

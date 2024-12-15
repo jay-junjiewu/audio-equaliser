@@ -93,9 +93,6 @@ std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float ga
     }  
 
     std::vector<int16_t> gainChannel = input;
-    //(input.size(), 0);
-
-    std::cout << startIndex <<" "<< endIndex << "\n";
 
     for (size_t i = startIndex; i < endIndex; i++) {
         int32_t scaledSample = static_cast<int32_t>(input[i]) * gain;
@@ -348,7 +345,7 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
     std::cout << "\n\n";
 }
 
-void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain) {
+void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float makeUpGain, float startDuration, float endDuration) {
     if (threshold < 0.0f || threshold > 1.0f) {
         std::cerr << "Error: Threshold must be between 0.0 and 1.0\n\n";
         return;
@@ -364,9 +361,27 @@ void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float mak
         return;
     }
 
+    if (startDuration < 0.0f || startDuration > p.totalDuration) {
+        std::cerr << "Error: Start duration must be between 0 and " << p.totalDuration << " sec\n\n";
+        return;
+    }
+
+    if (endDuration < 0.0f || endDuration > p.totalDuration) {
+        std::cerr << "Error: End duration must be between 0 and " << p.totalDuration << " sec\n\n";
+        return;
+    }
+
+    if (startDuration > endDuration) {
+        std::cerr << "Error: Start duration must be before end duration\n\n";
+        return;
+    }  
+
+    int startIndex = startDuration * p.header.sampleRate;
+    int endIndex = endDuration * p.header.sampleRate;
+
     int thresholdInt = threshold * INT16_MAX;
     
-    for (size_t j = 0; j < p.leftChannel.size(); j++) {
+    for (size_t j = startIndex; j < endIndex; j++) {
         int32_t compressedL = static_cast<int32_t>(p.leftChannel[j]);
         
         if (abs(compressedL) > thresholdInt) {
@@ -382,7 +397,7 @@ void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float mak
     }
 
     if (p.getHeader().numChannels == 2) {
-        for (size_t j = 0; j < p.rightChannel.size(); j++) {
+        for (size_t j = startIndex; j < endIndex; j++) {
             int32_t compressedR = static_cast<int32_t>(p.rightChannel[j]);
 
             if (abs(compressedR) > thresholdInt) {
@@ -400,5 +415,7 @@ void dynamicCompression(AudioProcessor& p, float threshold, int ratio, float mak
   
     std::cout << "Dynamically compressed audio with threshold " << threshold;
     std::cout << ", ratio " << ratio << ":1,";
-    std::cout << " and make-up gain " << makeUpGain << "\n\n";
+    std::cout << " and make-up gain " << makeUpGain;
+    std::cout << " from " << startDuration << " to " << endDuration << " sec ";
+    std::cout << "[" << startIndex << " - " << endIndex << ")\n\n";
 }
