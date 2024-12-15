@@ -26,7 +26,7 @@ Note: I could have used any of the many good libraries out there, which are poss
    git clone https://github.com/jay-junjiewu/audio-equaliser.git
    cd audio-equaliser
    ```
-2. Build the project using the included Makefile:
+2. Build the project using the included Makefile (I am using clang on Linux):
    ```bash
    make
    ```
