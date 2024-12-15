@@ -43,7 +43,7 @@ static std::vector<Command> COMMANDS = {
     
     {"g", runGainCommand, "g0 [sel]", "adds gain to audio data, sel = 'l', 'r', or 'b'"},
     {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
-    {"dc", runDynamicCompressionCommand, "[thres] [ratio] [gain]", "dynamic compression parameters: threshold, ratio, gain"},
+    {"drc", runDynamicCompressionCommand, "[thres] [ratio] [gain]", "dynamic range compression parameters: threshold, ratio, gain"},
 
     {"?", nullptr, "", "show this message"},
     {"q", nullptr, "", "quit"}

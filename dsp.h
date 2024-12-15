@@ -65,7 +65,7 @@ std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std:
 void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
 
 
-/// @brief Applies dynamic compression to all audio channels
+/// @brief Applies dynamic range compression to all audio channels
 /// @param p Reference to AudioProcessor object
 /// @param threshold 0.0f - 1.0f, level above which to apply gain reduction
 /// @param ratio >= 1, degree of compression
