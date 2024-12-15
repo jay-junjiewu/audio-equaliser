@@ -71,12 +71,11 @@ public:
 
     friend void volumeGain(AudioProcessor& p, float gain, char sel);
 
-    friend void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
+    friend void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel);
 
-    friend void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
+    friend void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel);
 
     friend void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
-
 
 
 

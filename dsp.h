@@ -30,7 +30,8 @@ std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float ga
 /// @param p Reference to AudioProcessor object
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
-void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
+/// @param sel Channel selection: left 'L', right 'R' or both 'B'
+void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel = 'b');
 
 
 /// @brief Filters data based on the filter coefficients
@@ -45,7 +46,8 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
 /// @param p Reference to AudioProcessor object
 /// @param b Numerator Coefficents {b0, b1, b2, ...}
 /// @param a Denominator Coefficents {1, a1, a2, a3, ...}
-void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
+/// @param sel Channel selection: left 'L', right 'R' or both 'B'
+void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel = 'b');
 
 
 /// @brief Zero-phase filtering based on the filter coefficients

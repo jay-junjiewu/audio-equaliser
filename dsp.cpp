@@ -57,7 +57,7 @@ std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float ga
     return gainChannel;
 }
 
-void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a) {
+void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel) {
     if (b.empty() || a.empty()) {
         std::cerr << "Error: Filter coefficients must not be empty\n";
         return;
@@ -65,6 +65,12 @@ void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<d
 
     if (a[0] == 0.0f) {
         std::cerr << "Error: Filter denominator a0 should not be 0\n";
+        return;
+    }
+
+    sel = tolower(sel);
+    if (sel != 'l' && sel != 'r' && sel != 'b') {
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
         return;
     }
 
@@ -80,11 +86,24 @@ void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<d
         std::cout << "Normalised Filter Coefficients\n";
     }
 
-    p.leftChannel = applyFilter(p.leftChannel, b_norm, a_norm);
+    // Process left channel
+    if (sel == 'l' || sel == 'b') {
+        p.leftChannel = applyFilter(p.leftChannel, b_norm, a_norm);
+    }
 
-    if (p.header.numChannels == 2) {
+    // Process right channel
+    if (sel == 'r' || sel == 'b') {
         p.rightChannel = applyFilter(p.rightChannel, b_norm, a_norm);
     }
+
+    std::cout << "Successfully applied filter on ";
+    if (sel == 'l')
+        std::cout << "left channel\n\n";
+    else if (sel == 'r')
+        std::cout << "right channel\n\n";
+    else if (sel == 'b')
+        std::cout << "left and right channels\n\n";
+
 }
 
 std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::vector<double>& b, const std::vector<double>& a) {
@@ -127,7 +146,7 @@ std::vector<int16_t> applyFilter(const std::vector<int16_t>& input, const std::v
     return filteredChannel;
 }
 
-void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a) {
+void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a, char sel) {
     if (b.empty() || a.empty()) {
         std::cerr << "Error: Filter coefficients must not be empty\n";
         return;
@@ -135,6 +154,12 @@ void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector
 
     if (a[0] == 0.0f) {
         std::cerr << "Error: Filter denominator a0 should not be 0\n";
+        return;
+    }
+
+    sel = tolower(sel);
+    if (sel != 'l' && sel != 'r' && sel != 'b') {
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
         return;
     }
 
@@ -149,11 +174,23 @@ void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector
         for (double &x : a_norm) x /= k;
     }
 
-    p.leftChannel = applyFiltfilt(p.leftChannel, b_norm, a_norm);
+    // Process left channel
+    if (sel == 'l' || sel == 'b') {
+        p.leftChannel = applyFiltfilt(p.leftChannel, b_norm, a_norm);
+    }
 
-    if (p.header.numChannels == 2) {
+    // Process right channel
+    if (sel == 'r' || sel == 'b') {
         p.rightChannel = applyFiltfilt(p.rightChannel, b_norm, a_norm);
     }
+
+    std::cout << "Successfully applied filtfilt on ";
+    if (sel == 'l')
+        std::cout << "left channel\n\n";
+    else if (sel == 'r')
+        std::cout << "right channel\n\n";
+    else if (sel == 'b')
+        std::cout << "left and right channels\n\n";
 }
 
 std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std::vector<double>& b, const std::vector<double>& a) {
