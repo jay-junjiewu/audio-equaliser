@@ -56,8 +56,11 @@ void AudioProcessor::initialise(const std::string& inputFile) {
         }
     }
 
-    // Sub-Bass, Bass, Midrange, Upper Midrange, Treble
 
+    totalDuration = static_cast<float>(leftChannel.size()) / header.sampleRate;
+
+
+    // Sub-Bass, Bass, Midrange, Upper Midrange, Treble
     // 55, 182, 606, 2007, 6654, 22050 at 44.1kHz sampling
     // 20, 66, 220, 728, 2414, 8000 at 16kHz sampling
     b = {
@@ -137,13 +140,12 @@ void AudioProcessor::writeOutputWav(const std::string& outputFile) {
     }
 
     std::vector<int16_t> interleavedData;
-    
-    // Ensure matching channel lengths
-    size_t numSamples = std::min(leftChannel.size(), rightChannel.size());
-    interleavedData.reserve(numSamples * 2);
 
     // Correctly interleave stereo channels
     if (header.numChannels == 2) {
+        size_t numSamples = std::min(leftChannel.size(), rightChannel.size());
+        interleavedData.reserve(numSamples * 2);
+
         for (size_t i = 0; i < numSamples; i++) {
             interleavedData.push_back(leftChannel[i]);
             interleavedData.push_back(rightChannel[i]);
@@ -211,4 +213,41 @@ void AudioProcessor::writeOutputTxt(const std::string& outputFile) {
     outFile.close();
 
     std::cout << "Left " << leftChannel.size() << " and " << "Right " << rightChannel.size() << " samples saved to " << outputFile << "\n\n";
+}
+
+
+void AudioProcessor::trimAudio(float startDuration, float endDuration) {
+
+    if (startDuration < 0.0f || startDuration > totalDuration) {
+        std::cerr << "Error: Start duration must be between 0 and " << totalDuration << " sec\n";
+        return;
+    }
+
+    if (endDuration < 0.0f || endDuration > totalDuration) {
+        std::cerr << "Error: End duration must be between 0 and " << totalDuration << " sec\n";
+        return;
+    }
+
+    if (startDuration > endDuration) {
+        std::cerr << "Error: Start duration must be before end duration\n";
+        return;
+    }    
+
+    int startIndex = startDuration * header.sampleRate;
+    int endIndex = endDuration * header.sampleRate;
+
+    leftChannel.erase(leftChannel.begin(), leftChannel.begin() + startIndex);
+    leftChannel.erase(leftChannel.begin() + (endIndex - startIndex), leftChannel.end());
+
+    if (header.numChannels == 2) {
+        // Stereo
+        rightChannel.erase(rightChannel.begin(), rightChannel.begin() + startIndex);
+        rightChannel.erase(rightChannel.begin() + (endIndex - startIndex), rightChannel.end());
+    }
+
+    totalDuration = static_cast<float>(endIndex - startIndex) / header.sampleRate;
+
+    std::cout << "Trimmed audio from " << startDuration << " to " << endDuration << " sec\n";
+    std::cout << "New audio duration: " << totalDuration << " sec\n";
+    
 }

@@ -41,10 +41,11 @@ public:
     void initialise(const std::string& inputFile);
 
     // Getters for private data
+    const WavHeader& getHeader() const { return header; }
+    const float& getDuration() const { return totalDuration; }
     const std::vector<int16_t>& getLeftChannel() const { return leftChannel; }
     const std::vector<int16_t>& getRightChannel() const { return rightChannel; }
     const std::vector<char>& getListData() const { return listData; }
-    const WavHeader& getHeader() const { return header; }
     const std::vector<std::vector<double>>& getB() const { return b; }
     const std::vector<std::vector<double>>& getA() const { return a; }
 
@@ -63,6 +64,10 @@ public:
     /// @param outputFile 
     void writeOutputTxt(const std::string& outputFile);
 
+    /// @brief 
+    /// @param startDuration 
+    /// @param endDuration 
+    void trimAudio(float startDuration, float endDuration);
 
 
     /*************************** Friendly DSP Functions *****************************/ 
@@ -83,8 +88,12 @@ public:
 
 private:
     WavHeader header;                   // WAV header
+
+    float totalDuration;                // Duration of the audio file
+
     std::vector<int16_t> leftChannel;   // Left channel audio samples
     std::vector<int16_t> rightChannel;  // Right channel audio samples
+
     std::vector<char> listData;         // LIST data
 
     // Equaliser Filter Coefficients
