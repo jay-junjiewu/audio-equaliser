@@ -10,9 +10,9 @@ Note: I could have used any of the many good libraries out there, which are poss
 
 - **5-Band Equaliser:**
   - Adjust individual gain (in dB) for 5 frequency bands.
-- **Filtering:**
-  - Applies band-pass filters to isolate and process specific frequency ranges.
-- **Zero Phase:**
+- **Dynamic Range Compression:**
+  - Compresses audio dynamic range by reducing the volume of loud sounds.
+- **Zero Phase Filtering:**
   - Achieves zero phase filtering by processing filtering in both the forward and reverse directions.
 - **Stereo Processing:**
   - Supports separate equalisation for left and right audio channels.
@@ -52,7 +52,9 @@ Note: I could have used any of the many good libraries out there, which are poss
    - Applies filters to isolate specific frequency ranges.
 3. **Gain Adjustment**:
    - Scales each band by a specified gain factor (in dB).
-4. **Audio Output**:
+4. **Dynamic Range Compression**:
+   - Adjusts the dynamic range of audio based on custom threshold, ratio, and make-up gain
+5. **Audio Output**:
    - Combines the processed frequency bands and outputs a `.wav` file.
 
 
