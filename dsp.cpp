@@ -1,30 +1,44 @@
 #include "dsp.h"
 
-void volumeGain_dB(AudioProcessor& p, float gain_dB) {
+void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel) {
     if (gain_dB < -48.0f || gain_dB > 48.0f) {
         std::cerr << "Error: Gain must be between -48dB and 48dB\n";
         return;
     }
 
     float gain = pow(10, gain_dB / 20.0);
-    volumeGain(p, gain);
+    volumeGain(p, gain, sel);
 }
 
-void volumeGain(AudioProcessor& p, float gain) {
+void volumeGain(AudioProcessor& p, float gain, char sel) {
     if (gain < 0.0f || gain > 255.0f) {
         std::cerr << "Error: Gain must be between 0 and 255\n";
         return;
     }
 
-    // Process left channel
-    p.leftChannel = applyVolumeGain(p.leftChannel, gain);
+    sel = tolower(sel);
+    if (sel != 'l' && sel != 'r' && sel != 'b') {
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        return;
+    }
 
-    // Process right channel if stereo
-    if (p.header.numChannels == 2) {
+    // Process left channel
+    if (sel == 'l' || sel == 'b') {
+        p.leftChannel = applyVolumeGain(p.leftChannel, gain);
+    }
+
+    // Process right channel
+    if (sel == 'r' || sel == 'b') {
         p.rightChannel = applyVolumeGain(p.rightChannel, gain);
     }
 
-    std::cout << "Successfully applied gain of " << gain << "\n\n";
+    std::cout << "Successfully applied gain of " << gain << " to ";
+    if (sel == 'l')
+        std::cout << "left channel\n\n";
+    else if (sel == 'r')
+        std::cout << "right channel\n\n";
+    else if (sel == 'b')
+        std::cout << "left and right channels\n\n";
 }
 
 std::vector<int16_t> applyVolumeGain(const std::vector<int16_t>& input, float gain) {
@@ -154,7 +168,7 @@ std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std:
     return reverseFiltered;
 }
 
-void equaliser(AudioProcessor& p, const std::vector<float>& gains) {
+void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel) {
     if (gains.size() != 5) {
         std::cerr << "Error: Equaliser needs 5 gains\n";
         return;
@@ -167,24 +181,31 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains) {
         }
     }
 
-    // Cache leftChannel reference
-    auto& leftChannel = p.leftChannel;
-
-    std::vector<int16_t> accumulatedL(leftChannel.size(), 0);
-
-    for (size_t i = 0; i < gains.size(); i++) {
-        std::vector<int16_t> filteredL = applyFiltfilt(leftChannel, p.getB()[i], p.getA()[i]);
-
-        for (size_t j = 0; j < leftChannel.size(); j++) {
-            // 0.7 cause filter overlap causes higher gain when all 5 signals are added up
-            int32_t scaledSampleL = static_cast<int32_t>(filteredL[j]) * 0.7 * gains[i];
-            accumulatedL[j] += std::clamp(scaledSampleL, static_cast<int32_t>(INT16_MIN), static_cast<int32_t>(INT16_MAX));
-        }
+    sel = tolower(sel);
+    if (sel != 'l' && sel != 'r' && sel != 'b') {
+        std::cerr << "Error: Invalid channel selection (l, r, or b) \n";
+        return;
     }
-    leftChannel = std::move(accumulatedL);
-    
 
-    if (p.header.numChannels == 2) {
+    if (sel == 'l' || sel == 'b') {
+        // Cache leftChannel reference
+        auto& leftChannel = p.leftChannel;
+
+        std::vector<int16_t> accumulatedL(leftChannel.size(), 0);
+
+        for (size_t i = 0; i < gains.size(); i++) {
+            std::vector<int16_t> filteredL = applyFiltfilt(leftChannel, p.getB()[i], p.getA()[i]);
+
+            for (size_t j = 0; j < leftChannel.size(); j++) {
+                // 0.7 cause filter overlap causes higher gain when all 5 signals are added up
+                int32_t scaledSampleL = static_cast<int32_t>(filteredL[j]) * 0.7 * gains[i];
+                accumulatedL[j] += std::clamp(scaledSampleL, static_cast<int32_t>(INT16_MIN), static_cast<int32_t>(INT16_MAX));
+            }
+        }
+        leftChannel = std::move(accumulatedL);
+    }
+
+    if (sel == 'r' || sel == 'b') {
         auto& rightChannel = p.rightChannel;
 
         std::vector<int16_t> accumulatedR(rightChannel.size(), 0);
@@ -200,7 +221,15 @@ void equaliser(AudioProcessor& p, const std::vector<float>& gains) {
         rightChannel = std::move(accumulatedR);
     }
 
-    std::cout << "Equalised with gains: ";
+    std::cout << "Equalised ";
+    if (sel == 'l')
+        std::cout << "left channel ";
+    else if (sel == 'r')
+        std::cout << "right channel ";
+    else if (sel == 'b')
+        std::cout << "left and right channels ";
+    
+    std::cout << "with gains: ";
     for (float g : gains) {
         std::cout << g << " ";
     }

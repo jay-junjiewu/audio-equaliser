@@ -8,13 +8,15 @@
 
 /// @brief Reduces total volumne of the whole file
 /// @param gain_dB -48.0f - 48.9f scale dB
-void volumeGain_dB(AudioProcessor& p, float gain_dB);
+/// @param sel Channel selection: left 'L', right 'R' or both 'B'
+void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel = 'b');
 
 
 /// @brief Reduces total volumne of the whole file
 /// @param p Reference to AudioProcessor object
 /// @param gain 0 - 255 scale
-void volumeGain(AudioProcessor& p, float gain);
+/// @param sel Channel selection: left 'L', right 'R' or both 'B'
+void volumeGain(AudioProcessor& p, float gain, char sel = 'b');
 
 
 /// @brief Scales input data based on gain
@@ -57,8 +59,8 @@ std::vector<int16_t> applyFiltfilt(const std::vector<int16_t>& input, const std:
 /// @brief Applies 5 gains to the preset 5 equaliser filters
 /// @param p Reference to AudioProcessor object
 /// @param gains 5 gains for Sub-Bass, Bass, Midrange, Upper Midrange, Treble
-void equaliser(AudioProcessor& p, const std::vector<float>& gains);
-
+/// @param sel Channel selection: left 'L', right 'R' or both 'B'
+void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel = 'b');
 
 
 #endif

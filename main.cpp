@@ -36,13 +36,13 @@ static bool ECHO = false;
 static Command* currCommand = nullptr;
 
 static std::vector<Command> COMMANDS = {
-    {"r", runReadFileCommand, "input.wav", "reads 16 bit .wav file"},
-    {"w", runWriteFileCommand, "output.wav", "writes result to .wav file"},
+    {"r", runReadFileCommand, "[input.wav]", "reads 16 bit .wav file"},
+    {"w", runWriteFileCommand, "[output.wav]", "writes result to .wav file"},
     {"p", runPrintHeaderCommand, "", "prints header information of the .wav file"},
-    {"d", runDumpTxtCommand, "output.txt", "prints audio data to .txt file"},
+    {"d", runDumpTxtCommand, "[output.txt]", "prints audio data to .txt file"},
     
-    {"g", runGainCommand, "gain", "adds gain to audio data"},
-    {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4", "equalises audio data based on 5 gains"},
+    {"g", runGainCommand, "g0 [sel]", "adds gain to audio data, sel = 'l', 'r', or 'b'"},
+    {"eq", runEqualiseCommand, "g0 g1 g2 g3 g4 [sel]", "equalises based on 5 gains, sel = 'l', 'r', or 'b'"},
 
     {"?", nullptr, "", "show this message"},
     {"q", nullptr, "", "quit"}
@@ -51,7 +51,7 @@ static std::vector<Command> COMMANDS = {
 void showHelp() {
     std::cout << "Commands:" << '\n';
     for (const auto& cmd : COMMANDS) {
-        std::cout << std::left << std::setw(5) << cmd.code << std::setw(18) << cmd.argHint << cmd.helpMsg << '\n';
+        std::cout << std::left << std::setw(5) << cmd.code << std::setw(25) << cmd.argHint << cmd.helpMsg << '\n';
     }
     std::cout << '\n';
 }
@@ -215,13 +215,21 @@ void runDumpTxtCommand(AudioProcessor& p, int argc, std::vector<std::string>& ar
 }
 
 void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
-    if (argc != 2) {
-        std::cout << "Usage: g <val>" << "\n\n";
+    if (argc != 2 && argc != 3) {
+        std::cout << "Usage: g g0 [sel]" << "\n\n";
         return;
     }
 
     if (p.getLeftChannel().empty()) {
         std::cout << "Read in audio file with command \"r\" first! " << "\n\n";
+        return;
+    }
+
+    char sel = 'b';
+    if (argc == 3) sel = tolower(argv[2][0]);
+
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cout << "Audio is mono and does not have a right channel" << "\n\n";
         return;
     }
 
@@ -233,22 +241,30 @@ void runGainCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv)
         return;
     }
 
-    volumeGain(p, gain);
+    volumeGain(p, gain, sel);
 }
 
 void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& argv) {
-    if (argc != 6) {
-        std::cout << "Usage: eq g0 g1 g2 g3 g4" << "\n\n";
+    if (argc != 6 && argc != 7) {
+        std::cout << "Usage: eq g0 g1 g2 g3 g4 [sel]" << "\n\n";
         return;
     }
 
     if (p.getLeftChannel().empty()) {
-        std::cout << "Read in audio file with command \"r\" first! " << "\n\n";
+        std::cout << "Read in audio file with command \"r\" first!" << "\n\n";
+        return;
+    }
+
+    char sel = 'b';
+    if (argc == 7) sel = tolower(argv[6][0]);
+
+    if (sel == 'r' && p.getRightChannel().empty()) {
+        std::cout << "Audio is mono and does not have a right channel" << "\n\n";
         return;
     }
 
     std::vector<float> gains;
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < 6; i++) {
         try {
             float num = stof(argv[i]);
             gains.push_back(num);
@@ -257,5 +273,5 @@ void runEqualiseCommand(AudioProcessor& p, int argc, std::vector<std::string>& a
             return;
         }
     }
-    equaliser(p, gains);
+    equaliser(p, gains, sel);
 }

@@ -67,15 +67,15 @@ public:
 
     /*************************** Friendly DSP Functions *****************************/ 
 
-    friend void volumeGain_dB(AudioProcessor& p, float gain_dB);
+    friend void volumeGain_dB(AudioProcessor& p, float gain_dB, char sel);
 
-    friend void volumeGain(AudioProcessor& p, float gain);
+    friend void volumeGain(AudioProcessor& p, float gain, char sel);
 
     friend void filter(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
     friend void filtfilt(AudioProcessor& p, const std::vector<double>& b, const std::vector<double>& a);
 
-    friend void equaliser(AudioProcessor& p, const std::vector<float>& gains);
+    friend void equaliser(AudioProcessor& p, const std::vector<float>& gains, char sel);
 
 
 
