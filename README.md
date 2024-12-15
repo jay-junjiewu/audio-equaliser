@@ -34,6 +34,14 @@ Note: I could have used any of the many good libraries out there, which are poss
    ```bash
    ./program
    ```
+   To show help message run:
+    ```bash
+   ./program -h
+   ```
+   To echo all commands run:
+    ```bash
+   ./program -e
+   ```
 
 
 ## How It Works
